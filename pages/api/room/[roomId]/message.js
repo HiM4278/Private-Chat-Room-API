@@ -22,7 +22,7 @@ export default function roomIdMessageRoute(req, res) {
     if (roomsIdx === undefined) {
       res.status(404).json({ ok: false, message: "Invalid room id" });
     } else {
-      res.status(200).json({ ok: true, message: roomsIdx.messages });
+      res.status(200).json({ ok: true, messages: roomsIdx.messages });
     }
     //check if roomId exist
 
@@ -49,19 +49,16 @@ export default function roomIdMessageRoute(req, res) {
       username: username.username,
     };
     if (roomsIdx === undefined) {
-      res.status(404).json({ ok: false, message: "Invalid room id" });
-    } else {
-      if (typeof req.body.text !== "string" || req.body.text.length === 0)
-        return res
-          .status(400)
-          .json({ ok: false, message: "Invalid text input" });
-      else {
-        roomsIdx.messages.push(newMeg);
-        writeChatRoomsDB(rooms);
-        res.status(200).json({ ok: true, message: newMeg });
-      }
+      return res.status(404).json({ ok: false, message: "Invalid room id" });
     }
-    //validate body
-    //create message
+    if (typeof req.body.text !== "string" || req.body.text.length === 0)
+      return res.status(400).json({ ok: false, message: "Invalid text input" });
+    else {
+      roomsIdx.messages.push(newMeg);
+      writeChatRoomsDB(rooms);
+      return res.status(200).json({ ok: true, message: newMeg });
+    }
   }
+  //validate body
+  //create message
 }
